@@ -1,0 +1,30 @@
+{
+  "name": "onebot",
+  "version": "1.0.0",
+  "description": "The one bot to rule them all.",
+  "main": "./dist/core/index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init": "node ./scripts/init.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gurrrrrrett3/onebot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gurrrrrrett3/onebot/issues"
+  },
+  "homepage": "https://github.com/gurrrrrrett3/onebot#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "discord.js": "^14.0.3",
+    "dotenv": "^16.0.1",
+    "prisma": "^4.1.0"
+  }
+}
