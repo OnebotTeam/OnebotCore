@@ -4,7 +4,6 @@ import { ButtonInteraction, Client, Collection, Colors, EmbedBuilder } from "dis
 interface Button {
   data: {
     customId: string;
-    description: string;
   };
   execute: (Interaction: ButtonInteraction) => Promise<void>;
 }
@@ -39,11 +38,10 @@ export default class ButtonManager {
     });
   }
 
-  public registerButton(id: string, callback: Function) {
+  public registerButton(id: string, callback: (interaction: ButtonInteraction) => Promise<any>) {
     const buttonCommand: Button = {
       data: {
         customId: id,
-        description: "",
       },
 
       execute: async (interaction: ButtonInteraction) => {

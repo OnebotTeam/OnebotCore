@@ -1,24 +1,36 @@
-import { Client, InteractionType } from "discord.js";
+import { Client, Colors, EmbedBuilder, InteractionType, SelectMenuInteraction } from "discord.js";
 
-export default class ModalManager {
-  public modals: Map<string, Function> = new Map();
+export default class SelectMenuManager {
+  public menus: Map<string, Function> = new Map();
 
   constructor(private client: Client) {
-    this.client.on("interactionCreate", (modal) => {
-      if (modal.type != InteractionType.ModalSubmit) return;
+    this.client.on("interactionCreate", (menu) => {
+      if (!menu.isSelectMenu()) return;
 
-      const modalId = modal.customId;
-      const modalFunc = this.modals.get(modalId);
-      if (!modalFunc) return;
-      modalFunc(modal);
+      const menuId = menu.customId;
+      const menuFunc = this.menus.get(menuId);
+      if (!menuFunc) {
+        menu.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle("Error")
+              .setDescription(`This Select Menu has expired.`)
+              .setColor(Colors.Red)
+              .setFooter({ text: `selectMenuId: ${menu.customId}` }),
+          ],
+          ephemeral: true,
+        });
+        return;
+      }
+      menuFunc(menu);
     });
   }
 
-  public registerModal(id: string, modal: Function) {
-    this.modals.set(id, modal);
+  public registerMenu(id: string, callback: (interaction: SelectMenuInteraction) => Promise<any>) {
+    this.menus.set(id, callback);
   }
 
-  public unregisterModal(id: string) {
-    this.modals.delete(id);
+  public unregisterMenu(id: string) {
+    this.menus.delete(id);
   }
 }

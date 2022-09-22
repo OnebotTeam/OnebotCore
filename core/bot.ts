@@ -1,16 +1,18 @@
 import { Client } from "discord.js";
 import ModuleLoader from "./loaders/moduleLoader";
+import CommandLoader from "./loaders/commandLoader";
 import ButtonManager from "./managers/buttonManager";
 import SelectMenuManager from "./managers/selectMenuManager";
 import ModalManager from "./managers/modalManager";
 
 export default class Bot {
 
-    public moduleLoader: ModuleLoader
+    commandLoader: CommandLoader
+    moduleLoader: ModuleLoader
 
-    public buttonManager: ButtonManager
-    public selectMenuManager: SelectMenuManager
-    public modalManager: ModalManager
+    buttonManager: ButtonManager
+    selectMenuManager: SelectMenuManager
+    modalManager: ModalManager
   
   constructor(public client: Client) {
     this.client
@@ -18,6 +20,8 @@ export default class Bot {
         console.info(`Logged in as ${this.client.user?.tag}`);
 
       })
+      
+    this.commandLoader = new CommandLoader(this.client);
     this.moduleLoader = new ModuleLoader(this);
     
     this.buttonManager = new ButtonManager(this.client);

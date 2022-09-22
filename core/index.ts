@@ -1,12 +1,23 @@
 import CoreObject from './core';
 import PrismaFileParser from './database/prismaFileParser';
 import fs from "fs"
+import dotenv from "dotenv"
+
+
+dotenv.config()
 
 var Core = new CoreObject({
-    token: 'token',
+    token: process.env.TOKEN as string,
     mode: 'selfhost',
 })
 
-const models = PrismaFileParser.parse()
-console.log(models.map(model => model.toString()).join("\n\n"))
-fs.writeFileSync("models.txt", models.map(model => model.toString()).join("\n\n"))
+let bot = Core.bot;
+let client = Core.Client;
+
+export default Core;
+export { bot, client };
+
+module.exports = Core;
+module.exports.default = Core;
+module.exports.client = Core.Client;
+module.exports.bot = Core.bot;

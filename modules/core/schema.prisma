@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//
+//  PRISMA SCHEMA
+//
+//  This will be read and parsed by Onebot. 
+//
+
+
+// Here's an example model to get you started
+// It's reccomended to start each model with your module name to avoid conflicts
+
+model CoreUser {
+    id        Int      @id @default(autoincrement())
+    name      String
+    email     String   @unique
+}

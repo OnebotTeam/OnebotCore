@@ -1,0 +1,49 @@
+{
+    "command": {
+      "scope": "typescript",
+      "prefix": "command",
+      "body": [
+        "import SlashCommandBuilder from \"../../../core/loaders/objects/customSlashCommandBuilder\";",
+        "",
+        "const Command = new SlashCommandBuilder()",
+        "  .setName(\"$1\")",
+        "  .setDescription(\"$2\")",
+        "  .setFunction(async (interaction) => {",
+        "        $3",
+        "  });",
+        "",
+        "export default Command;"
+      ]
+    },
+    "userContextCommand": {
+      "scope": "typescript",
+      "prefix": "userContextCommand",
+      "body": [
+        "import UserContextCommandBuilder from \"../../../core/loaders/objects/CustomUserContextMenuCommandBuilder\";",
+        "",
+        "const Command = new UserContextCommandBuilder()",
+        "  .setName(\"$1\")",
+        "  .setFunction(async (interaction) => {",
+        "        $2",
+        "  });",
+        "",
+        "export default Command;"
+      ]
+    },
+    "messageContextCommand": {
+      "scope": "typescript",
+      "prefix": "messageContextCommand",
+      "body": [
+        "import MessageContextCommandBuilder from \"../../../core/loaders/objects/CustomMessageContextMenuCommandBuilder\";",
+        "",
+        "const Command = new MessageContextCommandBuilder()",
+        "  .setName(\"$1\")",
+        "  .setFunction(async (interaction) => {",
+        "        $2",
+        "  });",
+        "",
+        "export default Command;"
+      ]
+    }
+  }
+  
