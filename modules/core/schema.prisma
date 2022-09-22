@@ -12,12 +12,3 @@ datasource db {
 //  This will be read and parsed by Onebot. 
 //
 
-
-// Here's an example model to get you started
-// It's reccomended to start each model with your module name to avoid conflicts
-
-model CoreUser {
-    id        Int      @id @default(autoincrement())
-    name      String
-    email     String   @unique
-}

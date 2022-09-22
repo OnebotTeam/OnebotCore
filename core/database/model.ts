@@ -8,7 +8,7 @@ export default class Model {
   public version: string;
   public cols: ModelOption[];
 
-  constructor(public modelText: string) {
+  constructor(public modelText: string, moduleInfo?: { name: string; version: string }) {
     /*
 
        // Example model:
@@ -25,29 +25,53 @@ export default class Model {
     */
 
     const lines = this.modelText.split("\n");
-    const infoLine = lines[0]; // mCore,v1.0.0
-    const modelLine = lines[1]; // model User {
 
-    const info = infoLine.split(",");
-    this.module = info[0].replace("// m", "");
-    this.version = info[1].replace("v", "");
-    this.name = modelLine.replace("model ", "").replace(" {", "");
+    if (moduleInfo) {
+      const modelLine = lines[0]; // model User {
+      this.name = modelLine.replace("model ", "").replace(" {", "");
+      this.module = moduleInfo.name;
+      this.version = moduleInfo.version;
+    } else {
+      const infoLine = lines[0]; // mCore,v1.0.0
+      const modelLine = lines[1]; // model User {
+      const info = infoLine.split(",");
+      this.module = info[0].replace("// m", "");
+      this.version = info[1].replace("v", "");
+      this.name = modelLine.replace("model ", "").replace(" {", "");
+    }
 
-    const dataLines = lines.slice(2, lines.length - 1);
+    const dataLines: string[] = []; 
+
+    // add an empty line after each line (no idea why this is needed)
+    lines.slice(moduleInfo ? 1 : 2, lines.length - 1).forEach((line) => {
+      dataLines.push(line);
+      dataLines.push("");
+    })
+
     const dataLineRegex = new RegExp(
-      /^  (?<name>[a-zA-Z]+) +(?<type>[a-zA-Z\[\]]+)(?<isOptional>\?)? *(?<options>(@.+))*/gm
+      / +(?<name>[a-zA-Z]+) +(?<type>[a-zA-Z\[\]]+)(?<isOptional>\?)? *(?<options>@.+)*/gm
     );
-    this.cols = Utils.removeUndefined(
+
+    const cols = 
       dataLines.map((line) => {
         const match = dataLineRegex.exec(line);
         if (!match || !match.groups) return;
         const { name, type, isOptional, options } = match.groups;
         return new ModelOption(name, type, isOptional == "?", options);
       })
+    
+      this.cols = Utils.removeUndefined(cols);
+  }
+
+  public toString() {
+    return (
+      `Model: ${chalk.yellow.bold(this.name)} (${chalk.green(this.module)}, ${chalk.blue(
+        "v" + this.version
+      )})\n` + this.cols.map((col) => col.toString()).join("\n")
     );
   }
 
-   public toString() {
-    return `Model: ${chalk.yellow.bold(this.name)} (${chalk.green(this.module)}, ${chalk.blue("v" + this.version)})\n` + this.cols.map((col) => col.toString()).join("\n");
-   }
+  public toPrismaFile() {
+    return `// m${this.module},v${this.version}\nmodel ${this.name} {\n${this.cols.map((col) => col.toPrismaFile()).join("\n")}\n}`;
+  }
 }

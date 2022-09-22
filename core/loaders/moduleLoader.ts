@@ -4,6 +4,7 @@ import Bot from "../bot";
 import Module from "../base/module";
 import { CustomCommandBuilder } from "./loaderTypes";
 import { GatewayIntentsString } from "discord.js";
+import DatabaseLoader from "./databaseLoader";
 
 export default class ModuleLoader {
   public modules: Map<string, Module> = new Map();
@@ -51,6 +52,7 @@ export default class ModuleLoader {
       });
 
       this.bot.commandLoader.load(commands);
+      DatabaseLoader.load()
     });
   }
 

@@ -29,7 +29,8 @@ export default class ModelOption {
         if (option.includes("unique")) this.options.unique = true;
         if (option.includes("default")) {
           const value = option.split("(")[1].replace(")", "");
-          this.options.default = value;
+          const prismaValueFunctions = ["now", "cuid", "uuid", "autoincrement", "createdAt", "updatedAt"];
+          this.options.default = prismaValueFunctions.includes(value) ? `${value}()` : value;
         }
         if (option.includes("relation")) {
           const value = option.split("(")[1].replace(")", "");
@@ -49,6 +50,13 @@ export default class ModelOption {
     return `  ${chalk.green.bold(this.name)} (${this.optional ? chalk.blueBright("optional") : chalk.redBright("required")} ${this.isArray ? chalk.green("array ") : ""}${chalk.yellow(this.type)})` + Object.entries(this.options).map(([key, value]) => {
       if (value === true) return ` ${chalk.blue("@")}${chalk.blue(key)}`;
       return ` ${chalk.blue("@")}${chalk.blue(key)}${chalk.yellow(`(${value})`)}`;
+    }).join("");
+  }
+
+    public toPrismaFile() {
+    return `  ${this.name} ${this.type}${this.optional ? "?" : ""}` + Object.entries(this.options).map(([key, value]) => {
+      if (value === true) return ` @${key}`;
+      return ` @${key}(${value})`;
     }).join("");
   }
 }
