@@ -1,4 +1,4 @@
-import { Client, Colors, EmbedBuilder, InteractionType, SelectMenuInteraction } from "discord.js";
+import { Client, Colors, EmbedBuilder, SelectMenuInteraction } from "discord.js";
 
 export default class SelectMenuManager {
   public menus: Map<string, Function> = new Map();

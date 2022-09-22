@@ -30,7 +30,7 @@ export default class CommandBuilder {
     | CustomSubommandBuilder
     | CustomSlashCommandSubcommandGroupBuilder
   )[] = [];
-  execute: (interaction: ChatInputCommandInteraction) => Promise<void> = async () => Promise.resolve();
+  execute: (interaction: ChatInputCommandInteraction) => Promise<any> = async () => Promise.resolve();
 
   constructor() {}
 
@@ -41,7 +41,7 @@ export default class CommandBuilder {
     return this;
   }
 
-  setFunction(callback: (interaction: ChatInputCommandInteraction) => Promise<void>): this {
+  setFunction(callback: (interaction: ChatInputCommandInteraction) => Promise<any>): this {
     this.execute = callback;
     return this;
   }
@@ -68,6 +68,11 @@ export default class CommandBuilder {
 
   setDefaultMemberPermissions(permissions: string | number | bigint | null | undefined) {
     this._builder.setDefaultMemberPermissions(permissions)
+    return this;
+  }
+
+  setDMPermission(permission: boolean): this {
+    this._builder.setDMPermission(permission);
     return this;
   }
 

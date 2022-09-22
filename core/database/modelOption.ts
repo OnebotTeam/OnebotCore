@@ -22,7 +22,7 @@ export default class ModelOption {
         this.type = type.replace("[]", "");
     }  
 
-    if (optionString) {
+    if (optionString) { 
       const options = optionString.split("@");
       options.forEach((option) => {
         if (option.includes("id")) this.options.id = true;

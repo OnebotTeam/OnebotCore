@@ -12,7 +12,7 @@ import CommandBuilder from "./customSlashCommandBuilder";
     protected enabled: boolean = true;
     private _builder = new ContextMenuCommandBuilder().setType(ApplicationCommandType.User)
     private _module = "";
-    execute: (interaction: ContextMenuCommandInteraction) => Promise<void> = async () => Promise.resolve();
+    execute: (interaction: ContextMenuCommandInteraction) => Promise<any> = async () => Promise.resolve();
   
     constructor() {}
   
@@ -23,7 +23,7 @@ import CommandBuilder from "./customSlashCommandBuilder";
       return this;
     }
   
-    setFunction(callback: (interaction: ContextMenuCommandInteraction) => Promise<void>): this {
+    setFunction(callback: (interaction: ContextMenuCommandInteraction) => Promise<any>): this {
       this.execute = callback;
       return this;
     }
