@@ -25,6 +25,8 @@ export default class DatabaseLoader {
     if (isDifferent) {
         await this.generate().catch((err) => {
             console.log(`${chalk.bold.red("Failed to generate the Prisma Client.")}\n${chalk.red("This is likely due to not having any models defined.\nIf you have any models defined, please check the error above,\notherwise, you can ignore this message.")}`)
+        }).finally(() => {
+            console.log(`${chalk.bold.green("Successfully generated the Prisma Client.")}`)
         })
     } else {
         console.log("Prisma Client is up to date.")
@@ -37,7 +39,7 @@ export default class DatabaseLoader {
         return new Promise<0 | 1>((resolve, reject) => {
             child_process.spawn("npx prisma db push", {
                 shell: true,
-                stdio: "inherit"
+                stdio: "ignore"
             }).on("exit", (code) => {
                 if (code === 0) {
                     resolve(code)

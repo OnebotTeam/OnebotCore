@@ -23,3 +23,4 @@ declare namespace Core {
 }
 
 declare var Core: Core
+

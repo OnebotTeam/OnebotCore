@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import Bot from "../bot";
 import Module from "../base/module";
-import { CustomCommandBuilder } from "./loaderTypes";
+import { CustomCommandBuilder, Manifest } from "./loaderTypes";
 import { GatewayIntentsString } from "discord.js";
 import DatabaseLoader from "./databaseLoader";
 
@@ -24,6 +24,7 @@ export default class ModuleLoader {
   public loadModules() {
     const modulesPath = path.join(__dirname, "../../modules");
     const modules = fs.readdirSync(modulesPath);
+
     for (const mod of modules) {
       const modulePath = path.join(modulesPath, mod);
       const moduleFile = require(modulePath);
@@ -52,7 +53,7 @@ export default class ModuleLoader {
       });
 
       this.bot.commandLoader.load(commands);
-      DatabaseLoader.load()
+      DatabaseLoader.load();
     });
   }
 
@@ -125,6 +126,28 @@ export default class ModuleLoader {
     return true;
   }
 
+  public async onReady() {
+    const promises: Promise<{
+      module: Module;
+      success: boolean;
+    }>[] = [];
+    this.modules.forEach(async (module) => {
+      promises.push(
+        new Promise(async (resolve) => {
+          const res = await module.onLoad();
+          resolve({
+            module,
+            success: res,
+          });
+        })
+      );
+    });
+
+    (await Promise.all(promises)).forEach((res) => {
+      if (!res.success) console.error(`Failed to load module ${res.module.name}`);
+    });
+  }
+
   public static getIntents(): GatewayIntentsString[] {
     const modules = fs.readdirSync(path.join(__dirname, "../../../modules"));
     const intents = new Set<string>();
@@ -138,6 +161,8 @@ export default class ModuleLoader {
         });
       }
     }
+
+    console.log("Loaded intents: " + Array.from(intents.values()).join(", "));
 
     return Array.from(intents) as GatewayIntentsString[];
   }

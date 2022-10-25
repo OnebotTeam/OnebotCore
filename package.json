@@ -1,6 +1,6 @@
 {
   "name": "onebot",
-  "version": "1.0.0",
+  "version": "1.2.2",
   "description": "The one bot to rule them all.",
   "main": "./dist/core/index.js",
   "directories": {
@@ -8,7 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install-linux": "sudo npm i -g"
+    "install-cli": "sudo npm i -g",
+    "build": "tsc; node ./dist/cli/index.js build",
+    "start": "node ./dist/cli/index.js start",
+    "cli": "node ./dist/cli/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,10 +28,12 @@
   },
   "homepage": "https://github.com/gurrrrrrett3/onebot#readme",
   "dependencies": {
-    "@prisma/client": "^4.1.0",
+    "@prisma/client": "^4.5.0",
     "chalk": "^4.1.2",
     "discord.js": "^14.2.0",
-    "dotenv": "^16.0.1",
-    "prisma": "^4.1.0"
+    "dotenv": "^16.0.1"
+  },
+  "devDependencies": {
+    "prisma": "^4.5.0"
   }
 }

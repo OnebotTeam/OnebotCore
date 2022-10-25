@@ -11,13 +11,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// mModeration,v1.0.0
-model Ban {
-  id Int @id @default(autoincrement())
-  user String
-  guild String
-  reason String
-  moderator String
-  date DateTime @default(now())
-  expiresAt DateTime
+// mDynamicChannels,v1.0.0
+model DynamicChannelsGuildSettings {
+  id String @id @default(cuid())
+  guildId String @unique
+  lobbyChannelId String
 }

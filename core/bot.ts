@@ -18,7 +18,7 @@ export default class Bot {
     this.client
       .on("ready", () => {
         console.info(`Logged in as ${this.client.user?.tag}`);
-
+        this.moduleLoader.onReady();
       })
       
     this.commandLoader = new CommandLoader(this.client);
@@ -27,5 +27,12 @@ export default class Bot {
     this.buttonManager = new ButtonManager(this.client);
     this.selectMenuManager = new SelectMenuManager(this.client);
     this.modalManager = new ModalManager(this.client);
+  }
+
+  public async restart() {
+    const { spawn } = require("child_process");
+    spawn("npm", ["run", "cli", "restart"], {
+      stdio: "inherit",
+    });
   }
 }

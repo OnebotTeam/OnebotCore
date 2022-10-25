@@ -22,7 +22,9 @@ const commands: {
     usage: "start",
     run: () => {
       console.log("Starting bot...");
-      child_process.spawn("node dist/core/index.js", { shell: true, stdio: "inherit" });
+      const process = child_process.spawn("node dist/core/index.js", { shell: true, stdio: "inherit" })
+      
+      fs.writeFileSync(".onebot.pid", process.pid!.toString());
     },
   },
   build: {
@@ -75,6 +77,23 @@ const commands: {
         console.log("Starting typescript compiler in watch mode...");
         child_process.spawn("tsc -w", { shell: true, stdio: "inherit" });
         }
+  },
+  restart: {
+    description: "Restarts the bot",
+    usage: "restart",
+    run: () => {
+      console.log("Restarting bot...");
+     
+      const pid = fs.readFileSync(".onebot.pid", "utf8");
+      
+      try {
+        process.kill(parseInt(pid), "SIGINT");
+      }
+      catch (e) {
+        console.log("Bot is not running");
+      }
+
+    }
   }
 };
 
@@ -82,6 +101,10 @@ if (commands.hasOwnProperty(command)) {
   commands[command].run(args);
 } else {
   console.log(chalk.bold.red("Invalid command!"));
+  printUsage();
+}
+
+function printUsage() {
   console.log("Available commands:");
   for (const commandName in commands) {
     console.log(

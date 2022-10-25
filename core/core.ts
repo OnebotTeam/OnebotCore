@@ -15,6 +15,7 @@ export default class Core {
       this.Client = new Client({ intents });
       this.bot = new Bot(this.Client);
 
+      this.Client.setMaxListeners(0);
       this.Client.login(this._options.token);
       
     }

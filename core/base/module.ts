@@ -3,6 +3,7 @@ import { BaseModuleType, CustomCommandBuilder } from "../loaders/loaderTypes";
 import fs from "fs"
 import path from "path"
 import { Client } from "discord.js";
+import chalk from "chalk";
 
 export default class Module implements BaseModuleType {
      name: string = ""
@@ -21,7 +22,7 @@ export default class Module implements BaseModuleType {
     /**
      * Override this method to run code when the module is loaded
      */
-    async onLoad(): Promise<Boolean> {
+    async onLoad(): Promise<boolean> {
         console.log(`Loaded module ${this.name}`);
         return true;
     }
@@ -46,11 +47,15 @@ export default class Module implements BaseModuleType {
 
         for (const commandFile of commandFolder) {
             if (!commandFile.endsWith(".js")) continue;
+            try {
             const command = require(path.resolve(`./dist/modules/${this.name}/commands/${commandFile}`)).default as CustomCommandBuilder;
-            command.setModule(this.name);            
+            command.setModule(this.name)        
             commands.push(command);
 
             this.commands.set(command.getName(), command);
+            } catch (e) {
+                console.error(chalk.red(`Error loading command ${commandFile} in module ${this.name}`));
+            }
         }
 
         return commands;
