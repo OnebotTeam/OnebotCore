@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { RESTPostAPIApplicationCommandsJSONBody, Routes, REST, Collection, Client } from "discord.js";
 import { bot } from "..";
+import Logger from "../utils/logger";
 import { CustomCommandBuilder } from "./loaderTypes";
 import CommandBuilder from "./objects/customSlashCommandBuilder";
 
@@ -37,19 +38,17 @@ export default class CommandLoader {
       });
 
       if (duplicateCommandNamesFromSameModule.length > 0) {
-        console.log(
-          chalk.red(
-            `Duplicate command names found in module ${duplicateCommandNamesFromSameModule[0].getModule()}: ${duplicateCommandNamesFromSameModule}\nAttempting to remove duplicate commands...`
-          )
+        Logger.error(
+          `Duplicate command names found in module ${duplicateCommandNamesFromSameModule[0].getModule()}: ${duplicateCommandNamesFromSameModule}\nAttempting to remove duplicate commands...`
         );
 
         // delete the `dist` folder and recompile the bot
 
         const { exec, spawn } = require("child_process");
         exec("rm -rf dist", () => {
-          console.log("Deleted dist folder, recompiling...");
+          Logger.log("CommandLoader", "Deleted dist folder, recompiling...");
           exec("tsc", () => {
-            console.log("Recompiled successfully, restarting...");
+            Logger.log("CommandLoader", "Recompiled successfully, restarting...");
 
             bot.restart();
           });
@@ -58,10 +57,8 @@ export default class CommandLoader {
         const duplicateCommandNamesString = duplicateCommandNames
           .map((command) => command.getName())
           .join(", ");
-        console.log(
-          chalk.red(
-            `Duplicate command names found: ${duplicateCommandNamesString}. Please rename the commands to be unique.`
-          )
+        Logger.error(
+          "CommandLoader", `Duplicate command names found: ${duplicateCommandNamesString}. Please rename the commands to be unique.`
         );
         return;
       }
@@ -70,7 +67,7 @@ export default class CommandLoader {
     //Collect list of command files
     let commandsToDeploy: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
-    console.log(`Deploying ${commands.length} commands`);
+    Logger.log("CommandLoader", `Deploying ${commands.length} command${commands.length == 1 ? "" : "s"}`);
 
     //Import off of the commands as modules
     for (const command of commands) {
@@ -91,10 +88,10 @@ export default class CommandLoader {
           body: commandsToDeploy,
         })
         .then(() => {
-          console.log(`${this.commands.size} commands deployed`);
+          Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`);
         })
         .catch((err) => {
-          console.error(err);
+          Logger.error("CommandLoader", err);
         });
     } else {
       rest
@@ -102,10 +99,10 @@ export default class CommandLoader {
           body: commandsToDeploy,
         })
         .then(() => {
-          console.log(`${this.commands.size} commands deployed`);
+          Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`);
         })
         .catch((err) => {
-          console.error(err);
+          Logger.error("CommandLoader", err);
         });
     }
 
@@ -153,7 +150,8 @@ export default class CommandLoader {
 
     const char = "•";
 
-    console.log(
+    Logger.log(
+      "CommandLoader",
       [
         chalk.blue("Command Limits"),
         `Chat Input Commands:      [${chalk.green(char.repeat(slashCommandCount))}${chalk.red(

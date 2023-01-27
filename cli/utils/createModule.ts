@@ -34,17 +34,6 @@ export default function CreateModule(moduleName: string, moduleDescription: stri
         .join("")
     );
 
-  const moduleSchema = fs
-    .readFileSync(path.resolve("./cli/resources/module.schema.template"), "utf8")
-    .toString()
-    .replace(
-      /<nameUppercase>/g,
-      moduleName
-        .split("")
-        .map((c, i) => (i === 0 ? c.toUpperCase() : c))
-        .join("")
-    );
-
   const exampleCommand = fs
     .readFileSync(path.resolve("./cli/resources/module.command.example.template"), "utf8")
     .toString()
@@ -58,9 +47,10 @@ export default function CreateModule(moduleName: string, moduleDescription: stri
 
   fs.mkdirSync(modulePath);
   fs.mkdirSync(`${modulePath}/commands`);
+  fs.mkdirSync(`${modulePath}/interactions`);
+  fs.mkdirSync(`${modulePath}/entities`);
   fs.writeFileSync(`${modulePath}/index.ts`, moduleIndex);
   fs.writeFileSync(`${modulePath}/manifest.json`, moduleManifest);
-  fs.writeFileSync(`${modulePath}/schema.prisma`, moduleSchema);
   fs.writeFileSync(`${modulePath}/commands/example.ts`, exampleCommand);
 
   console.log(`Created module ${moduleName}`);

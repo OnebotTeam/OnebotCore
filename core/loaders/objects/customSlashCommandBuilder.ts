@@ -12,6 +12,7 @@ import {
   SlashCommandRoleOption,
   SlashCommandUserOption,
 } from "discord.js";
+import Logger from "../../utils/logger";
 import CustomSlashCommandIntegerOption from "./customSlashCommandIntegerOption";
 import CustomSlashCommandNumberOption from "./customSlashCommandNumberOption";
 import CustomSlashCommandStringOption from "./customSlashCommandStringOption";
@@ -265,8 +266,6 @@ export default class CommandBuilder {
         ? interaction.options.getSubcommandGroup()
         : null;
 
-      console.log(subcommandGroup, subcommand);
-
       if (subcommandGroup) {
         const subcommandGroupObject = this._customOptions.find(
           (o) => o instanceof CustomSlashCommandSubcommandGroupBuilder && o.name === subcommandGroup
@@ -300,7 +299,7 @@ export default class CommandBuilder {
         }
       }
     } catch (e) {
-      console.error(e);
+      Logger.error(this.getName() ,e);
     }
   }
 }

@@ -12,6 +12,7 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandUserOption,
 } from "discord.js";
+import Logger from "../../utils/logger";
 import CustomSlashCommandIntegerOption from "./customSlashCommandIntegerOption";
 import CustomSlashCommandNumberOption from "./customSlashCommandNumberOption";
 import CustomSlashCommandStringOption from "./customSlashCommandStringOption";
@@ -197,7 +198,7 @@ export default class CustomSlashCommandSubcommandBuilder {
         }
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(this.name, error);
     }
   }
 }

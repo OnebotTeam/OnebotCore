@@ -1,6 +1,6 @@
 import CoreObject from './core';
 import dotenv from "dotenv"
-import { PrismaClient } from '@prisma/client';
+import Database from './database';
 
 
 dotenv.config()
@@ -13,7 +13,7 @@ var Core = new CoreObject({
 let bot = Core.bot;
 let client = Core.Client;
 
-export const db = new PrismaClient();
+export const db = new Database()
 
 export default Core;
 export { bot, client };

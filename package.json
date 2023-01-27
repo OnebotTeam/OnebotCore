@@ -27,13 +27,22 @@
     "onebot": "./dist/cli/index.js"
   },
   "homepage": "https://github.com/gurrrrrrett3/onebot#readme",
+  "mikro-orm":{
+    "useTsNode": true,
+    "configPaths": [
+      "./core/database/mikro-orm.config.ts"
+    ]
+  },
   "dependencies": {
-    "@prisma/client": "^4.5.0",
+    "@mikro-orm/core": "^5.6.8",
+    "@mikro-orm/postgresql": "^5.6.8",
+    "@mikro-orm/reflection": "^5.6.8",
     "chalk": "^4.1.2",
     "discord.js": "^14.2.0",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "prisma": "^4.5.0"
+    "@mikro-orm/cli": "^5.6.8"
   }
 }

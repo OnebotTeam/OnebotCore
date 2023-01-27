@@ -4,6 +4,7 @@ import CommandLoader from "./loaders/commandLoader";
 import ButtonManager from "./managers/buttonManager";
 import SelectMenuManager from "./managers/selectMenuManager";
 import ModalManager from "./managers/modalManager";
+import Logger from "./utils/logger";
 
 export default class Bot {
 
@@ -17,7 +18,7 @@ export default class Bot {
   constructor(public client: Client) {
     this.client
       .on("ready", () => {
-        console.info(`Logged in as ${this.client.user?.tag}`);
+        Logger.info("Core", `Logged in as ${this.client.user?.tag}`);
         this.moduleLoader.onReady();
       })
       

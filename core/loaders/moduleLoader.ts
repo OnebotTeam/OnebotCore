@@ -4,7 +4,7 @@ import Bot from "../bot";
 import Module from "../base/module";
 import { CustomCommandBuilder, Manifest } from "./loaderTypes";
 import { GatewayIntentsString } from "discord.js";
-import DatabaseLoader from "./databaseLoader";
+import Logger from "../utils/logger";
 
 export default class ModuleLoader {
   public modules: Map<string, Module> = new Map();
@@ -32,7 +32,7 @@ export default class ModuleLoader {
       this.addModule(m);
     }
 
-    console.log("Loaded modules: " + this.modules.size);
+    Logger.log("ModuleLoader","Loaded modules: " + this.modules.size);
 
     //load commands on ready
 
@@ -53,7 +53,6 @@ export default class ModuleLoader {
       });
 
       this.bot.commandLoader.load(commands);
-      DatabaseLoader.load();
     });
   }
 
@@ -144,7 +143,7 @@ export default class ModuleLoader {
     });
 
     (await Promise.all(promises)).forEach((res) => {
-      if (!res.success) console.error(`Failed to load module ${res.module.name}`);
+      if (!res.success) Logger.error("ModuleLoader", `Failed to load module ${res.module.name}`);
     });
   }
 
@@ -162,7 +161,7 @@ export default class ModuleLoader {
       }
     }
 
-    console.log("Loaded intents: " + Array.from(intents.values()).join(", "));
+    Logger.log("ModuleLoader","Loaded intents: " + Array.from(intents.values()).join(", "));
 
     return Array.from(intents) as GatewayIntentsString[];
   }
