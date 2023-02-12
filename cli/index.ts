@@ -22,9 +22,26 @@ const commands: {
     usage: "start",
     run: () => {
       console.log("Starting bot...");
-      const process = child_process.spawn("node dist/core/index.js", { shell: true, stdio: "inherit" })
-      
-      fs.writeFileSync(".onebot.pid", process.pid!.toString());
+      loadEnv();
+      const proc = child_process.spawn("node dist/core/index.js", {
+        shell: true,
+        stdio: "inherit",
+        env: { ...process.env, NODE_ENV: "production" },
+      });
+      fs.writeFileSync(".onebot.pid", proc.pid!.toString());
+    },
+  },
+  debug: {
+    description: "Starts the bot in debug mode",
+    usage: "debug",
+    run: () => {
+      console.log("Starting bot in debug mode...");
+      loadEnv();
+      child_process.spawn("node dist/core/index.js", {
+        shell: true,
+        stdio: "inherit",
+        env: { ...process.env, NODE_ENV: "development", DEBUG: "true" },
+      });
     },
   },
   build: {
@@ -74,27 +91,40 @@ const commands: {
     description: "Starts the typescript compiler in watch mode",
     usage: "watch",
     run: () => {
-        console.log("Starting typescript compiler in watch mode...");
-        child_process.spawn("tsc -w", { shell: true, stdio: "inherit" });
-        }
+      console.log("Starting typescript compiler in watch mode...");
+      child_process.spawn("tsc -w", { shell: true, stdio: "inherit" });
+    },
   },
   restart: {
     description: "Restarts the bot",
     usage: "restart",
     run: () => {
       console.log("Restarting bot...");
-     
+
       const pid = fs.readFileSync(".onebot.pid", "utf8");
-      
+
       try {
         process.kill(parseInt(pid), "SIGINT");
-      }
-      catch (e) {
+      } catch (e) {
         console.log("Bot is not running");
       }
+    },
+  },
+  stop: {
+    description: "Stops the bot",
+    usage: "stop",
+    run: () => {
+      console.log("Stopping bot...");
 
-    }
-  }
+      const pid = fs.readFileSync(".onebot.pid", "utf8");
+
+      try {
+        process.kill(parseInt(pid), "SIGINT");
+      } catch (e) {
+        console.log("Bot is not running");
+      }
+    },
+  },
 };
 
 if (commands.hasOwnProperty(command)) {
@@ -114,4 +144,17 @@ function printUsage() {
           : "")
     );
   }
+}
+
+function loadEnv() {
+  const conf = require("../config");
+  let vars: {
+    [key: string]: any;
+  } = {};
+  for (const key in conf) {
+    vars[key] = conf[key];
+    process.env[key] = conf[key];
+  }
+
+  return vars;
 }

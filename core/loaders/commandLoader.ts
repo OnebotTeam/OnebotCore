@@ -2,6 +2,7 @@ import chalk from "chalk";
 import { RESTPostAPIApplicationCommandsJSONBody, Routes, REST, Collection, Client } from "discord.js";
 import { bot } from "..";
 import Logger from "../utils/logger";
+import { usage } from "../utils/usage";
 import { CustomCommandBuilder } from "./loaderTypes";
 import CommandBuilder from "./objects/customSlashCommandBuilder";
 
@@ -67,13 +68,15 @@ export default class CommandLoader {
     //Collect list of command files
     let commandsToDeploy: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
-    Logger.log("CommandLoader", `Deploying ${commands.length} command${commands.length == 1 ? "" : "s"}`);
+    process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `Deploying ${commands.length} command${commands.length == 1 ? "" : "s"}`) : null;
 
     //Import off of the commands as modules
     for (const command of commands) {
       this.commands.set(command.getName(), command);
       commandsToDeploy.push(command.toJSON());
     }
+
+    usage.data.commands = commandsToDeploy.length;
 
     const rest = new REST({ version: "10" }).setToken(
       (this.client.token as string) ?? (process.env.TOKEN as string)
@@ -82,13 +85,13 @@ export default class CommandLoader {
     this.client.application?.commands.set([]);
 
     //Push to Discord
-    if (process.env.MODE == "guild") {
+    if (process.env.COMMAND_MODE == "GUILD") {
       rest
         .put(Routes.applicationGuildCommands(applicationId, process.env.GUILD_ID as string), {
           body: commandsToDeploy,
         })
         .then(() => {
-          Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`);
+         process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
         })
         .catch((err) => {
           Logger.error("CommandLoader", err);
@@ -99,7 +102,7 @@ export default class CommandLoader {
           body: commandsToDeploy,
         })
         .then(() => {
-          Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`);
+          process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
         })
         .catch((err) => {
           Logger.error("CommandLoader", err);
@@ -138,6 +141,7 @@ export default class CommandLoader {
   }
 
   public showLoadedCommandCount() {
+    if (process.env.SHOW_COMMAND_COUNT == "false") return;    
     const commands = Array.from(this.commands.values());
 
     const slashCommandCount = commands.filter((command) => command.getType() == "COMMAND").length;
@@ -156,13 +160,13 @@ export default class CommandLoader {
         chalk.blue("Command Limits"),
         `Chat Input Commands:      [${chalk.green(char.repeat(slashCommandCount))}${chalk.red(
           char.repeat(unusedSlashCommands)
-        )}]`,
+        )}] (${slashCommandCount}/100)`,
         `User Context Commands:    [${chalk.green(char.repeat(userContextCommandCount))}${chalk.red(
           char.repeat(unusedUserContextCommands)
-        )}]`,
+        )}] (${userContextCommandCount}/5)`,
         `Message Context Commands: [${chalk.green(char.repeat(messageContextCommandCount))}${chalk.red(
           char.repeat(unusedMessageContextCommands)
-        )}]`,
+        )}] (${messageContextCommandCount}/5)`,
       ].join("\n")
     );
   }

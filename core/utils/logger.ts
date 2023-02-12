@@ -4,7 +4,7 @@ import Utils from "./utils";
 const GLOAL_LOG_SETTINGS = {
   // 0 : info, 1 : warn, 2 : error
   consoleLogLevel: 0,
-  debugEnabled: process.argv.includes("--debug"),
+  debugEnabled: process.env.DEBUG === "true",
 };
 
 export default class Logger {

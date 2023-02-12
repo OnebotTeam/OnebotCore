@@ -5,6 +5,7 @@ import Module from "../base/module";
 import { CustomCommandBuilder, Manifest } from "./loaderTypes";
 import { GatewayIntentsString } from "discord.js";
 import Logger from "../utils/logger";
+import { usage } from "../utils/usage";
 
 export default class ModuleLoader {
   public modules: Map<string, Module> = new Map();
@@ -33,6 +34,10 @@ export default class ModuleLoader {
     }
 
     Logger.log("ModuleLoader","Loaded modules: " + this.modules.size);
+    usage.data.modules = this.modules.size;
+    usage.data.moduleList = Array.from(this.modules.keys()).join(", ");
+
+    this.bot.loadStatus.modules = true;
 
     //load commands on ready
 
@@ -52,7 +57,10 @@ export default class ModuleLoader {
         commands.push(...moduleCommands);
       });
 
-      this.bot.commandLoader.load(commands);
+      await this.bot.commandLoader.load(commands);
+      this.bot.loadStatus.commands = true;
+
+      this.bot.updateLoadStatus();
     });
   }
 

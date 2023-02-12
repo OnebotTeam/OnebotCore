@@ -17,16 +17,17 @@ export default class Module implements BaseModuleType {
 
   constructor(bot: Bot) {
     this.client = bot.client;
-    this.client.on("ready", () => {
-      Logger.info("ModuleLoader", `Loaded module ${this.constructor.name}`);
-    });
+    if (process.env.SHOW_MODULE_LOAD_INFO === "true") {
+      this.client.on("ready", () => {
+        Logger.log("ModuleLoader", `${chalk.bold.blue(this.name)} loaded!`);
+      });
+    }
   }
 
   /**
    * Override this method to run code when the module is loaded
    */
   async onLoad(): Promise<boolean> {
-    Logger.log("ModuleLoader", `Loaded module ${this.name}`);
     return true;
   }
 
@@ -62,6 +63,8 @@ export default class Module implements BaseModuleType {
       }
     }
 
+    Logger.debug("CommandLoader", `Loaded ${commands.length} commands for module ${this.name}`);
+
     return commands;
   }
 
@@ -77,17 +80,23 @@ export default class Module implements BaseModuleType {
     this.interactions = new Map();
 
     for (const interactionFile of interactionFolder) {
-        if (!interactionFile.endsWith(".js")) continue;
-        try {
-            const interaction = require(path.resolve(`./dist/modules/${this.name}/interactions/${interactionFile}`))
-            .default as InteractionHandler;
-            interaction.module = this.name;
-            interactions.push(interaction);
-    
-            this.interactions.set(interaction.id, interaction);
-        } catch (e) {
-            Logger.error("InteractionLoader", `Error loading interaction ${interactionFile} in module ${this.name}`);
-        }
-        }
+      if (!interactionFile.endsWith(".js")) continue;
+      try {
+        const interaction = require(path.resolve(
+          `./dist/modules/${this.name}/interactions/${interactionFile}`
+        )).default as InteractionHandler;
+        interaction.module = this.name;
+        interactions.push(interaction);
+
+        this.interactions.set(interaction.id, interaction);
+      } catch (e) {
+        Logger.error(
+          "InteractionLoader",
+          `Error loading interaction ${interactionFile} in module ${this.name}`
+        );
+      }
+    }
+
+    Logger.debug("InteractionLoader", `Loaded ${interactions.length} interactions for module ${this.name}`);
   }
 }

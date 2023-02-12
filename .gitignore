@@ -127,3 +127,5 @@ dist
 .pnp.*
 
 temp
+.onebot.pid
+core/data
