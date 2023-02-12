@@ -2,10 +2,10 @@ import { bot } from "../../core";
 import Module from "../../core/base/module";
 
 export default class <nameUppercase>Module extends Module {
-name = "<name>";
-description = "<desc>";
+public name = "<name>";
+public description = "<desc>";
 
-    get<nameUppercase>Module(): <nameUppercase>Module {
+public static get<nameUppercase>Module(): <nameUppercase>Module {
         return bot.moduleLoader.getModule("<name>") as <nameUppercase>Module;
     }
 

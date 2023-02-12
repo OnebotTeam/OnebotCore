@@ -1,5 +1,10 @@
-# onebot
+# OnebotCore
  The one bot to rule them all.
+
+
+Manages installing and loading onebot modules and commands.
+
+Check our org to get some modules, or make your own! 
 
 # Usage
 
