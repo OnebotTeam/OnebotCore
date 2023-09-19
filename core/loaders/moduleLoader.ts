@@ -9,8 +9,8 @@ import { usage } from "../utils/usage";
 
 export default class ModuleLoader {
   public modules: Map<string, Module> = new Map();
-
-  constructor(private bot: Bot) {
+  
+  constructor(private bot: Bot, public location: string = path.resolve("./dist/modules/")) {
     this.loadModules();
   }
 
@@ -65,12 +65,11 @@ export default class ModuleLoader {
   }
 
   public getAllModules(): Module[] {
-    const modulesPath = path.join(__dirname, "../../modules");
-    const modules = fs.readdirSync(modulesPath);
+    const modules = fs.readdirSync(this.location);
 
     const moduleObjects: Module[] = [];
     for (const mod of modules) {
-      const modulePath = path.join(modulesPath, mod);
+      const modulePath = path.join(this.location, mod);
       const moduleFile = require(modulePath);
       const m = new moduleFile.default(this.bot);
 
@@ -108,7 +107,7 @@ export default class ModuleLoader {
   public async loadModule(moduleName: string): Promise<boolean> {
     if (this.isModuleLoaded(moduleName)) return false;
 
-    const modulePath = path.join(__dirname, "../../modules", moduleName);
+    const modulePath = path.join(this.location, moduleName);
     const moduleFile = require(modulePath);
     const m = new moduleFile.default(this.bot);
     this.addModule(m);
@@ -155,12 +154,12 @@ export default class ModuleLoader {
     });
   }
 
-  public static getIntents(): GatewayIntentsString[] {
-    const modules = fs.readdirSync(path.join(__dirname, "../../../modules"));
+  public static getIntents(srcLocation: string = path.resolve("./modules")): GatewayIntentsString[] {
+    const modules = fs.readdirSync(srcLocation);
     const intents = new Set<string>();
 
     for (const mod of modules) {
-      const modulePath = path.join(__dirname, "../../../modules", mod);
+      const modulePath = path.join(srcLocation, mod);
       const manifest = JSON.parse(fs.readFileSync(path.join(modulePath, "manifest.json"), "utf-8"));
       if (manifest.intents) {
         manifest.intents.forEach((intent: string) => {

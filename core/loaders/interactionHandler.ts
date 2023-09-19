@@ -31,7 +31,7 @@ export default class InteractionHandler {
         bot.buttonManager.registerButton(id, execute);
         break;
       case InteractionType.MODAL:
-        bot.modalManager.registerMenu(id, execute);
+        bot.modalManager.registerModal(id, execute);
         break;
       case InteractionType.SELECT_MENU:
         bot.selectMenuManager.registerMenu(id, execute);
@@ -47,7 +47,7 @@ export default class InteractionHandler {
         bot.buttonManager.unregisterButton(this.id);
         break;
       case InteractionType.MODAL:
-        bot.modalManager.unregisterMenu(this.id);
+        bot.modalManager.unregisterModal(this.id);
         break;
       case InteractionType.SELECT_MENU:
         bot.selectMenuManager.unregisterMenu(this.id);

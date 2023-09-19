@@ -1,7 +1,6 @@
-import CoreObject from './core';
 import dotenv from "dotenv"
+import CoreObject from './core';
 import Database from './database';
-
 
 dotenv.config()
 

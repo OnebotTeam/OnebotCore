@@ -14,7 +14,7 @@ Check our org to get some modules, or make your own!
 
 # License
 
-Copyright (c) 2022 gurrrrrrett3
+Copyright (c) 2023 gurrrrrrett3
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -15,7 +15,7 @@ export default class Module implements BaseModuleType {
   private commands: Map<string, CustomCommandBuilder> = new Map();
   private interactions: Map<string, InteractionHandler> = new Map();
 
-  constructor(bot: Bot) {
+  constructor(bot: Bot, public location: string = path.resolve("./dist/modules/")) {
     this.client = bot.client;
     if (process.env.SHOW_MODULE_LOAD_INFO === "true") {
       this.client.on("ready", () => {
@@ -40,11 +40,11 @@ export default class Module implements BaseModuleType {
   }
 
   public async loadCommands() {
-    if (!fs.existsSync(path.resolve(`./dist/modules/${this.name}/commands`))) {
+    if (!fs.existsSync(path.resolve(this.location, `${this.name}/commands`))) {
       Logger.log("CommandLoader", `No commands found for module ${this.name}, skipping...`);
       return [];
     }
-    const commandFolder = fs.readdirSync(path.resolve(`./dist/modules/${this.name}/commands`));
+    const commandFolder = fs.readdirSync(path.resolve(this.location, `${this.name}/commands`));
 
     let commands: CustomCommandBuilder[] = [];
     this.commands = new Map();
@@ -52,7 +52,7 @@ export default class Module implements BaseModuleType {
     for (const commandFile of commandFolder) {
       if (!commandFile.endsWith(".js")) continue;
       try {
-        const command = require(path.resolve(`./dist/modules/${this.name}/commands/${commandFile}`))
+        const command = require(path.resolve(this.location, `${this.name}/commands/${commandFile}`))
           .default as CustomCommandBuilder;
         command.setModule(this.name);
         commands.push(command);
@@ -69,7 +69,7 @@ export default class Module implements BaseModuleType {
   }
 
   public async loadInteractions() {
-    if (!fs.existsSync(path.resolve(`./dist/modules/${this.name}/interactions`))) {
+    if (!fs.existsSync(path.resolve(this.location, `${this.name}/interactions`))) {
       Logger.log("InteractionLoader", `No interactions found for module ${this.name}, skipping...`);
       return [];
     }
@@ -83,7 +83,7 @@ export default class Module implements BaseModuleType {
       if (!interactionFile.endsWith(".js")) continue;
       try {
         const interaction = require(path.resolve(
-          `./dist/modules/${this.name}/interactions/${interactionFile}`
+          this.location, `${this.name}/interactions/${interactionFile}`
         )).default as InteractionHandler;
         interaction.module = this.name;
         interactions.push(interaction);
