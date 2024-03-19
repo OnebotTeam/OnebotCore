@@ -1,8 +1,13 @@
 import dotenv from "dotenv"
 import CoreObject from './core';
-import Database from './database';
+import GlobalLogger, { LogLevel } from "./utils/logger";
 
 dotenv.config()
+
+GlobalLogger.init({
+    consoleLogLevel: LogLevel.INFO,
+    debugEnabled: true
+})
 
 var Core = new CoreObject({
     token: process.env.TOKEN as string,
@@ -11,14 +16,9 @@ var Core = new CoreObject({
 
 let bot = Core.bot;
 let client = Core.Client;
-
-export const db = new Database()
+let db = Core.db;
 
 export default Core;
-export { bot, client };
+export { bot, client, db };
 
-module.exports = Core;
-module.exports.default = Core;
-module.exports.client = Core.Client;
-module.exports.bot = Core.bot;
-module.exports.db = db;
+Core.init()

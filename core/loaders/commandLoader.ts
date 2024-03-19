@@ -1,18 +1,13 @@
 import chalk from "chalk";
 import { RESTPostAPIApplicationCommandsJSONBody, Routes, REST, Collection, Client } from "discord.js";
-import { bot } from "..";
-import Logger from "../utils/logger";
-import { usage } from "../utils/usage";
+import Core, { bot } from "..";
+import { Logger } from "../utils/logger";
 import { CustomCommandBuilder } from "./loaderTypes";
-import CommandBuilder from "./objects/customSlashCommandBuilder";
-
-interface Command {
-  default: CommandBuilder;
-}
-
+import { exec } from "child_process";
 export default class CommandLoader {
   public client: Client;
   public commands: Collection<string, CustomCommandBuilder> = new Collection();
+  public logger: Logger = new Logger("CommandLoader");
 
   constructor(client: Client) {
     this.client = client;
@@ -39,17 +34,15 @@ export default class CommandLoader {
       });
 
       if (duplicateCommandNamesFromSameModule.length > 0) {
-        Logger.error(
+        this.logger.error(
           `Duplicate command names found in module ${duplicateCommandNamesFromSameModule[0].getModule()}: ${duplicateCommandNamesFromSameModule}\nAttempting to remove duplicate commands...`
         );
 
         // delete the `dist` folder and recompile the bot
-
-        const { exec, spawn } = require("child_process");
         exec("rm -rf dist", () => {
-          Logger.log("CommandLoader", "Deleted dist folder, recompiling...");
+          this.logger.log("Deleted dist folder, recompiling...");
           exec("tsc", () => {
-            Logger.log("CommandLoader", "Recompiled successfully, restarting...");
+            this.logger.log("Recompiled successfully, restarting...");
 
             bot.restart();
           });
@@ -58,8 +51,8 @@ export default class CommandLoader {
         const duplicateCommandNamesString = duplicateCommandNames
           .map((command) => command.getName())
           .join(", ");
-        Logger.error(
-          "CommandLoader", `Duplicate command names found: ${duplicateCommandNamesString}. Please rename the commands to be unique.`
+        this.logger.error(
+          `Duplicate command names found: ${duplicateCommandNamesString}. Please rename the commands to be unique.`
         );
         return;
       }
@@ -68,15 +61,13 @@ export default class CommandLoader {
     //Collect list of command files
     let commandsToDeploy: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
-    process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `Deploying ${commands.length} command${commands.length == 1 ? "" : "s"}`) : null;
+    Core.config.get("showCommandDeploymentInfo") ? this.logger.log(`Deploying ${commands.length} command${commands.length == 1 ? "" : "s"}`) : null;
 
     //Import off of the commands as modules
     for (const command of commands) {
       this.commands.set(command.getName(), command);
       commandsToDeploy.push(command.toJSON());
     }
-
-    usage.data.commands = commandsToDeploy.length;
 
     const rest = new REST({ version: "10" }).setToken(
       (this.client.token as string) ?? (process.env.TOKEN as string)
@@ -85,16 +76,16 @@ export default class CommandLoader {
     this.client.application?.commands.set([]);
 
     //Push to Discord
-    if (process.env.COMMAND_MODE == "GUILD") {
+    if (Core.config.get("commandRegisterMode") == "guild") {
       rest
-        .put(Routes.applicationGuildCommands(applicationId, process.env.GUILD_ID as string), {
+        .put(Routes.applicationGuildCommands(applicationId, Core.config.get("guildId")), {
           body: commandsToDeploy,
         })
         .then(() => {
-         process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
+          Core.config.get("showCommandDeploymentInfo") ? this.logger.log(`${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
         })
         .catch((err) => {
-          Logger.error("CommandLoader", err);
+          this.logger.error(err);
         });
     } else {
       rest
@@ -102,10 +93,10 @@ export default class CommandLoader {
           body: commandsToDeploy,
         })
         .then(() => {
-          process.env.SHOW_COMMAND_DEPLOYMENT_INFO == "true" ? Logger.log("CommandLoader", `${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
+          Core.config.get("showCommandDeploymentInfo") ? this.logger.log(`${this.commands.size} command${this.commands.size == 1 ? "" : "s"} deployed`) : null;
         })
         .catch((err) => {
-          Logger.error("CommandLoader", err);
+          this.logger.log(err);
         });
     }
 
@@ -141,7 +132,7 @@ export default class CommandLoader {
   }
 
   public showLoadedCommandCount() {
-    if (process.env.SHOW_COMMAND_COUNT == "false") return;    
+    if (!Core.config.get("showCommandCount")) return;
     const commands = Array.from(this.commands.values());
 
     const slashCommandCount = commands.filter((command) => command.getType() == "COMMAND").length;
@@ -154,8 +145,7 @@ export default class CommandLoader {
 
     const char = "•";
 
-    Logger.log(
-      "CommandLoader",
+    this.logger.log(
       [
         chalk.blue("Command Limits"),
         `Chat Input Commands:      [${chalk.green(char.repeat(slashCommandCount))}${chalk.red(

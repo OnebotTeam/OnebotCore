@@ -1,6 +1,6 @@
 {
   "name": "onebot",
-  "version": "1.2.2",
+  "version": "2.0.0",
   "description": "The one bot to rule them all.",
   "main": "./dist/core/index.js",
   "directories": {
@@ -39,12 +39,10 @@
     "chalk": "^4.1.2",
     "discord.js": "^14.2.0",
     "dotenv": "^16.0.1",
-    "node-fetch": "^2.6.9",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@mikro-orm/cli": "^5.6.8",
-    "@types/node": "^18.13.0",
-    "@types/node-fetch": "^2.6.2"
+    "@types/node": "^18.13.0"
   }
 }

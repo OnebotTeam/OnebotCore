@@ -4,7 +4,6 @@ import CustomUserContextMenuCommandBuilder from "./objects/CustomUserContextMenu
 import CustomSlashCommandBuilder from "./objects/customSlashCommandBuilder";
 import { GatewayIntentsString } from "discord.js";
 
-
 export class BaseModuleType {
     constructor(bot: Bot) {}
 }

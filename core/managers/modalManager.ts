@@ -14,9 +14,9 @@ export default class ModalManager {
           embeds: [
             new EmbedBuilder()
               .setTitle("Error")
-              .setDescription(`This Select Modal has expired.`)
+              .setDescription(`This Modal has expired.`)
               .setColor(Colors.Red)
-              .setFooter({ text: `selectModalId: ${modal.customId}` }),
+              .setFooter({ text: `modalId: ${modal.customId}` }),
           ],
           ephemeral: true,
         });

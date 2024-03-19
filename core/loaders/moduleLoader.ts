@@ -4,15 +4,13 @@ import Bot from "../bot";
 import Module from "../base/module";
 import { CustomCommandBuilder, Manifest } from "./loaderTypes";
 import { GatewayIntentsString } from "discord.js";
-import Logger from "../utils/logger";
-import { usage } from "../utils/usage";
+import GlobalLogger, { Logger } from "../utils/logger";
 
 export default class ModuleLoader {
   public modules: Map<string, Module> = new Map();
+  public logger = new Logger("ModuleLoader");
   
-  constructor(private bot: Bot, public location: string = path.resolve("./dist/modules/")) {
-    this.loadModules();
-  }
+  constructor(private bot: Bot, public location: string = path.resolve("./dist/modules/")) {}
 
   public addModule(module: Module) {
     this.modules.set(module.name, module);
@@ -33,9 +31,7 @@ export default class ModuleLoader {
       this.addModule(m);
     }
 
-    Logger.log("ModuleLoader","Loaded modules: " + this.modules.size);
-    usage.data.modules = this.modules.size;
-    usage.data.moduleList = Array.from(this.modules.keys()).join(", ");
+    this.logger.log("Loaded modules: " + this.modules.size);
 
     this.bot.loadStatus.modules = true;
 
@@ -150,7 +146,7 @@ export default class ModuleLoader {
     });
 
     (await Promise.all(promises)).forEach((res) => {
-      if (!res.success) Logger.error("ModuleLoader", `Failed to load module ${res.module.name}`);
+      if (!res.success) this.logger.error(`Failed to load module ${res.module.name}`);
     });
   }
 
@@ -168,7 +164,7 @@ export default class ModuleLoader {
       }
     }
 
-    Logger.log("ModuleLoader","Loaded intents: " + Array.from(intents.values()).join(", "));
+    GlobalLogger.log("ModuleLoader","Loaded intents: " + Array.from(intents.values()).join(", "));
 
     return Array.from(intents) as GatewayIntentsString[];
   }

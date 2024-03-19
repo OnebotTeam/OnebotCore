@@ -1,4 +1,4 @@
-import { Client, InteractionType } from "discord.js";
+import { Client, Colors, EmbedBuilder, InteractionType } from "discord.js";
 
 export default class SelectMenuManager {
   public menus: Map<string, Function> = new Map();
@@ -9,13 +9,24 @@ export default class SelectMenuManager {
 
       const menuId = menu.customId;
       const menuFunc = this.menus.get(menuId);
-      if (!menuFunc) return;
+      if (!menuFunc) {
+        menu.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle("Error")
+              .setDescription(`This Select Menu has expired.`)
+              .setColor(Colors.Red)
+              .setFooter({ text: `selectMenuId: ${menu.customId}` }),
+          ],
+          ephemeral: true,
+        });
+        return;
+      }
       menuFunc(menu);
     });
   }
 
   public registerMenu(id: string, callback: Function) {
-    console.log(`Registering menu: ${id}`);
     this.menus.set(id, callback);
   }
 

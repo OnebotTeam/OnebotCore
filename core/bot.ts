@@ -4,18 +4,19 @@ import CommandLoader from "./loaders/commandLoader";
 import ButtonManager from "./managers/buttonManager";
 import SelectMenuManager from "./managers/selectMenuManager";
 import ModalManager from "./managers/modalManager";
-import Logger from "./utils/logger";
-import { usage } from "./utils/usage";
+import { Logger } from "./utils/logger";
 
 export default class Bot {
-  commandLoader: CommandLoader;
-  moduleLoader: ModuleLoader;
+  public commandLoader: CommandLoader;
+  public moduleLoader: ModuleLoader;
 
-  buttonManager: ButtonManager;
-  selectMenuManager: SelectMenuManager;
-  modalManager: ModalManager;
+  public buttonManager: ButtonManager;
+  public selectMenuManager: SelectMenuManager;
+  public modalManager: ModalManager;
 
-  loadStatus: {
+  public logger = new Logger("Bot");
+
+  public loadStatus: {
     commands: boolean;
     modules: boolean;
   } = {
@@ -25,7 +26,7 @@ export default class Bot {
 
   constructor(public client: Client) {
     this.client.on("ready", () => {
-      Logger.info("Core", `Logged in as ${this.client.user?.tag}`);
+      this.logger.info(`Logged in as ${this.client.user?.tag}`);
       this.moduleLoader.onReady();
     });
 
@@ -37,6 +38,10 @@ export default class Bot {
     this.modalManager = new ModalManager(this.client);
   }
 
+  public async init() {
+    this.moduleLoader.loadModules();
+  }
+
   public async restart() {
     const { spawn } = require("child_process");
     spawn("npm", ["run", "cli", "restart"], {
@@ -46,9 +51,7 @@ export default class Bot {
 
   public updateLoadStatus() {
     if (this.loadStatus.commands && this.loadStatus.modules) {
-      Logger.info("Core", "All modules and commands loaded!");
-
-      if (process.env.SEND_USAGE_DATA === "true") usage.sendData();
+      this.logger.info("All modules and commands loaded!");
     }
   }
 }

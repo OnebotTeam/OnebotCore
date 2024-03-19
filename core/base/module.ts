@@ -5,7 +5,8 @@ import path from "path";
 import { Client } from "discord.js";
 import chalk from "chalk";
 import InteractionHandler from "../loaders/interactionHandler";
-import Logger from "../utils/logger";
+import { Logger } from "../utils/logger";
+import Core from "..";
 
 export default class Module implements BaseModuleType {
   name: string = "";
@@ -14,14 +15,17 @@ export default class Module implements BaseModuleType {
   private client?: Client;
   private commands: Map<string, CustomCommandBuilder> = new Map();
   private interactions: Map<string, InteractionHandler> = new Map();
+  protected logger: Logger
 
   constructor(bot: Bot, public location: string = path.resolve("./dist/modules/")) {
     this.client = bot.client;
-    if (process.env.SHOW_MODULE_LOAD_INFO === "true") {
+    this.logger = new Logger(this.name);
+    if (Core.config.get("showModuleLoadInfo")) {
       this.client.on("ready", () => {
-        Logger.log("ModuleLoader", `${chalk.bold.blue(this.name)} loaded!`);
+        this.logger.log(`${chalk.bold.blue(this.name)} loaded!`);
       });
     }
+
   }
 
   /**
@@ -35,13 +39,13 @@ export default class Module implements BaseModuleType {
    * Override this method to run code when the module is unloaded
    */
   async onUnload(): Promise<Boolean> {
-    Logger.log("ModuleLoader", `Unloaded module ${this.name}`);
+    this.logger.log(`Unloaded.`);
     return true;
   }
 
   public async loadCommands() {
     if (!fs.existsSync(path.resolve(this.location, `${this.name}/commands`))) {
-      Logger.log("CommandLoader", `No commands found for module ${this.name}, skipping...`);
+      this.logger.log(`No commands found for this module, skipping...`);
       return [];
     }
     const commandFolder = fs.readdirSync(path.resolve(this.location, `${this.name}/commands`));
@@ -59,18 +63,18 @@ export default class Module implements BaseModuleType {
 
         this.commands.set(command.getName(), command);
       } catch (e) {
-        Logger.error("CommandLoader", `Error loading command ${commandFile} in module ${this.name}`);
+       this.logger.info("CommandLoader", `Error loading command ${commandFile}`);
       }
     }
 
-    Logger.debug("CommandLoader", `Loaded ${commands.length} commands for module ${this.name}`);
+    this.logger.debug(`Loaded ${commands.length} commands`);
 
     return commands;
   }
 
   public async loadInteractions() {
     if (!fs.existsSync(path.resolve(this.location, `${this.name}/interactions`))) {
-      Logger.log("InteractionLoader", `No interactions found for module ${this.name}, skipping...`);
+      this.logger.log(`No interactions found for module this module, skipping...`);
       return [];
     }
 
@@ -90,13 +94,13 @@ export default class Module implements BaseModuleType {
 
         this.interactions.set(interaction.id, interaction);
       } catch (e) {
-        Logger.error(
+        this.logger.error(
           "InteractionLoader",
-          `Error loading interaction ${interactionFile} in module ${this.name}`
+          `Error loading interaction ${interactionFile}`
         );
       }
     }
 
-    Logger.debug("InteractionLoader", `Loaded ${interactions.length} interactions for module ${this.name}`);
+    this.logger.debug(`Loaded ${interactions.length} interactions`);
   }
 }
