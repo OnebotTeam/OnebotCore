@@ -7,8 +7,11 @@ import chalk from "chalk";
 import InteractionHandler from "../loaders/interactionHandler";
 import { Logger } from "../utils/logger";
 import Core from "..";
+import ConfigProvider from "../utils/configProvider";
 
-export default class Module implements BaseModuleType {
+export default class Module<Config extends {
+  [key: string]: any;
+} = {}> implements BaseModuleType {
   name: string = "";
   description: string = "";
 
@@ -16,8 +19,9 @@ export default class Module implements BaseModuleType {
   private commands: Map<string, CustomCommandBuilder> = new Map();
   private interactions: Map<string, InteractionHandler> = new Map();
   protected logger: Logger
+  public config: ConfigProvider<Config>
 
-  constructor(bot: Bot, public location: string = path.resolve("./dist/modules/")) {
+  constructor(bot: Bot, public location: string = path.resolve("./dist/modules/"), defaultConfig: Config = {} as Config) {
     this.client = bot.client;
     this.logger = new Logger(this.name);
     if (Core.config.get("showModuleLoadInfo")) {
@@ -25,6 +29,9 @@ export default class Module implements BaseModuleType {
         this.logger.log(`${chalk.bold.blue(this.name)} loaded!`);
       });
     }
+
+    this.config = ConfigProvider.getModuleAccessor<Config>(this.name);
+    this.config.defaultConfig(defaultConfig);
 
   }
 
@@ -63,7 +70,7 @@ export default class Module implements BaseModuleType {
 
         this.commands.set(command.getName(), command);
       } catch (e) {
-       this.logger.info("CommandLoader", `Error loading command ${commandFile}`);
+        this.logger.info("CommandLoader", `Error loading command ${commandFile}`);
       }
     }
 
