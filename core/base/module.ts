@@ -21,7 +21,7 @@ export default class Module<Config extends {
   protected logger: Logger
   public config: ConfigProvider<Config>
 
-  constructor(bot: Bot, public location: string = path.resolve("./dist/modules/"), defaultConfig: Config = {} as Config) {
+  constructor(bot: Bot, public location: string = path.resolve("./dist/modules/")) {
     this.client = bot.client;
     this.logger = new Logger(this.name);
     if (Core.config.get("showModuleLoadInfo")) {
@@ -31,8 +31,11 @@ export default class Module<Config extends {
     }
 
     this.config = ConfigProvider.getModuleAccessor<Config>(this.name);
-    this.config.defaultConfig(defaultConfig);
 
+  }
+
+  protected defaultConfig(defaultConfig: Config) {
+    this.config.defaultConfig(defaultConfig);
   }
 
   /**
