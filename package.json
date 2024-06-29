@@ -1,16 +1,16 @@
 {
   "name": "onebot",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "The one bot to rule them all.",
   "main": "./dist/core/index.js",
+  "type": "module",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./ob build",
-    "start": "./ob start",
-    "install": "./ob build"
+    "build": "tsc",
+    "start": "node dist/core/index.js"
   },
   "repository": {
     "type": "git",
@@ -36,13 +36,14 @@
     "@mikro-orm/core": "^5.6.8",
     "@mikro-orm/postgresql": "^5.6.8",
     "@mikro-orm/reflection": "^5.6.8",
-    "chalk": "^4.1.2",
+    "chalk": "^5.3.0",
     "discord.js": "^14.2.0",
     "dotenv": "^16.0.1",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@mikro-orm/cli": "^5.6.8",
-    "@types/node": "^18.13.0"
+    "@types/node": "^18.13.0",
+    "tsx": "^4.16.0"
   }
 }

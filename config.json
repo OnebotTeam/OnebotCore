@@ -5,6 +5,7 @@
     "guildId": "",
     "showCommandDeploymentInfo": true,
     "showCommandCount": true,
-    "showModuleLoadInfo": true
+    "showModuleLoadInfo": true,
+    "showInteractionHasExpired": true
   }
 }

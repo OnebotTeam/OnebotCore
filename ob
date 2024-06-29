@@ -1,2 +1,6 @@
 #! /bin/node
-require('child_process').execSync(`npx ts-node ${__dirname}/cli/index.ts ${process.argv.slice(2).join(' ')}`, { stdio: 'inherit' });
+import { execSync } from "child_process";
+import { resolve } from "path";
+execSync(`npx tsx ${resolve("src/cli/index.ts")} ${process.argv.slice(2).join(" ")}`, {
+	stdio: "inherit",
+});

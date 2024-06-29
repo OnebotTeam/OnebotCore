@@ -1,0 +1,17 @@
+import { bot } from "../../core/index.js";
+import Module from "../../core/base/module.js";
+
+export default class <nameUppercase>Module extends Module {
+
+    constructor() {
+       super({
+           name: "<name>",
+           description: "<desc>>",
+       });
+    }
+
+public static get<nameUppercase>Module(): <nameUppercase>Module {
+        return bot.moduleLoader.getModule("<name>") as <nameUppercase>Module;
+    }
+
+}

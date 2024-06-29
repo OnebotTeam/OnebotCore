@@ -1,0 +1,10 @@
+import SlashCommandBuilder from "../../../core/loaders/objects/customSlashCommandBuilder.js";
+
+const Command = new SlashCommandBuilder()
+  .setName("example")
+  .setDescription("Example command!")
+  .setFunction(async (interaction) => {
+        
+  });
+
+export default Command;
