@@ -3,7 +3,7 @@
       "scope": "typescript",
       "prefix": "command",
       "body": [
-        "import SlashCommandBuilder from \"../../../core/loaders/objects/customSlashCommandBuilder\";",
+        "import SlashCommandBuilder from \"../../../core/loaders/objects/customSlashCommandBuilder.js\";",
         "",
         "const Command = new SlashCommandBuilder()",
         "  .setName(\"$1\")",
@@ -19,7 +19,7 @@
       "scope": "typescript",
       "prefix": "userContextCommand",
       "body": [
-        "import UserContextCommandBuilder from \"../../../core/loaders/objects/CustomUserContextMenuCommandBuilder\";",
+        "import UserContextCommandBuilder from \"../../../core/loaders/objects/CustomUserContextMenuCommandBuilder.js\";",
         "",
         "const Command = new UserContextCommandBuilder()",
         "  .setName(\"$1\")",
@@ -34,7 +34,7 @@
       "scope": "typescript",
       "prefix": "messageContextCommand",
       "body": [
-        "import MessageContextCommandBuilder from \"../../../core/loaders/objects/CustomMessageContextMenuCommandBuilder\";",
+        "import MessageContextCommandBuilder from \"../../../core/loaders/objects/CustomMessageContextMenuCommandBuilder.js\";",
         "",
         "const Command = new MessageContextCommandBuilder()",
         "  .setName(\"$1\")",
